@@ -13,6 +13,7 @@ PLLJ_PLLSPE_INFO.txt
 .qsys_edit
 unsaved
 platform
+.metadata
 
 *.png
 *.bak
