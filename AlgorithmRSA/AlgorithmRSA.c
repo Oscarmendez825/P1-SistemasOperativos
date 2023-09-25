@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
 
 // Función para calcular el máximo común divisor (GCD)
 unsigned long long gcd(unsigned long long a, unsigned long long b) {
@@ -49,16 +54,6 @@ void generateRSAKeys(unsigned long long *publicKey, unsigned long long *privateK
     *privateKey = d;
 }
 
-// Función para cifrar un valor utilizando RSA
-unsigned long long encrypt(unsigned long long plaintext, unsigned long long publicKey, unsigned long long n) {
-    return mod_pow(plaintext, publicKey, n);
-}
-
-// Función para descifrar un valor utilizando RSA
-unsigned long long decrypt(unsigned long long ciphertext, unsigned long long privateKey, unsigned long long n) {
-    return mod_pow(ciphertext, privateKey, n);
-}
-
 int main() {
     unsigned long long publicKey, privateKey, n;
 
@@ -69,9 +64,9 @@ int main() {
     printf("n: %llu\n", n);
 
     // Ruta del archivo de texto original
-    const char *inputFilePath = "/usr/local/bin/text.txt";
+    const char *inputFilePath = "/home/gonzalo/Documentos/GitHub/P1-SistemasOperativos/AlgorithmRSA/text.txt";
     // Ruta del archivo de texto cifrado
-    const char *outputFilePath = "/usr/local/bin/ciphertext.txt";
+    const char *outputFilePath = "/home/gonzalo/Documentos/GitHub/P1-SistemasOperativos/AlgorithmRSA/ciphertext.txt";
 
     // Leer el archivo de texto original
     FILE *inputFile = fopen(inputFilePath, "r");
@@ -81,36 +76,64 @@ int main() {
     }
 
     // Crear el archivo de texto cifrado
-    FILE *outputFile = fopen(outputFilePath, "w");
-    if (outputFile == NULL) {
-        perror("Error al crear el archivo de salida");
+    int fd = open(outputFilePath, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+    if (fd == -1) {
+        perror("Error al abrir el archivo de salida");
         fclose(inputFile);
         return 1;
     }
 
-    // Leer el contenido del archivo de texto original y cifrarlo
+    // Obtener el tamaño del archivo de entrada
+    fseek(inputFile, 0, SEEK_END);
+    long file_size = ftell(inputFile);
+    fseek(inputFile, 0, SEEK_SET);
+
+    // Truncar el archivo de salida al tamaño del archivo de entrada
+    if (ftruncate(fd, file_size) == -1) {
+        perror("Error al truncar el archivo");
+        fclose(inputFile);
+        close(fd);
+        return 1;
+    }
+
+    // Mapear el archivo de salida en memoria
+    char *file_contents = mmap(NULL, file_size, PROT_WRITE, MAP_SHARED, fd, 0);
+    if (file_contents == MAP_FAILED) {
+        perror("Error al mapear el archivo de salida");
+        fclose(inputFile);
+        close(fd);
+        return 1;
+    }
+
+    // Leer el contenido del archivo de texto original, cifrarlo y escribirlo en el archivo de salida separado por comas
     char buffer[1024];
     unsigned long long plaintext;
+    int offset = 0;
     int isFirstValue = 1; // Para evitar agregar una coma antes del primer valor
     while (fscanf(inputFile, "%llu,", &plaintext) != EOF) {
         // Cifrar el valor
-        unsigned long long ciphertext = encrypt(plaintext, publicKey, n);
+        unsigned long long ciphertext = mod_pow(plaintext, publicKey, n);
 
-        // Imprimir y escribir el valor cifrado en el archivo de salida
+        // Convertir el valor cifrado a una cadena
+        char ciphertext_str[20]; // Suficientemente grande para contener el número cifrado
+        snprintf(ciphertext_str, sizeof(ciphertext_str), "%llu", ciphertext);
+
+        // Escribir el valor cifrado en el archivo de salida
         if (isFirstValue) {
             isFirstValue = 0;
         } else {
-            fprintf(outputFile, ",");
+            offset += sprintf(file_contents + offset, ",");
         }
-        fprintf(outputFile, "%llu", ciphertext);
+        offset += sprintf(file_contents + offset, "%s", ciphertext_str);
 
         printf("Texto original: %llu\n", plaintext);
         printf("Texto cifrado: %llu\n", ciphertext);
     }
 
-    // Cerrar los archivos
+    // Liberar recursos
     fclose(inputFile);
-    fclose(outputFile);
+    munmap(file_contents, file_size);
+    close(fd);
 
     printf("Los textos cifrados se han guardado en %s\n", outputFilePath);
 
