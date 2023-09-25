@@ -64,14 +64,14 @@ int main() {
 
     // Generar claves RSA de 16 bits
     generateRSAKeys(&publicKey, &privateKey, &n);
-    printf("Clave pública (e): %llu\n", publicKey);
-    printf("Clave privada (d): %llu\n", privateKey);
+    printf("Llave pública (e): %llu\n", publicKey);
+    printf("Llave privada (d): %llu\n", privateKey);
     printf("n: %llu\n", n);
 
     // Ruta del archivo de texto original
-    const char *inputFilePath = "/home/gonzalo/Documentos/GitHub/P1-SistemasOperativos/AlgorithmRSA/text.txt";
+    const char *inputFilePath = "/usr/local/bin/text.txt";
     // Ruta del archivo de texto cifrado
-    const char *outputFilePath = "/home/gonzalo/Documentos/GitHub/P1-SistemasOperativos/AlgorithmRSA/ciphertext.txt";
+    const char *outputFilePath = "/usr/local/bin/ciphertext.txt";
 
     // Leer el archivo de texto original
     FILE *inputFile = fopen(inputFilePath, "r");
