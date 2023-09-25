@@ -87,9 +87,11 @@ int main() {
     fseek(inputFile, 0, SEEK_END);
     long file_size = ftell(inputFile);
     fseek(inputFile, 0, SEEK_SET);
+    printf("Tamaño del archivo: %ld\n", file_size);
 
+    //***
     // Truncar el archivo de salida al tamaño del archivo de entrada
-    if (ftruncate(fd, file_size) == -1) {
+    if (ftruncate(fd, 1000) == -1) {
         perror("Error al truncar el archivo");
         fclose(inputFile);
         close(fd);
