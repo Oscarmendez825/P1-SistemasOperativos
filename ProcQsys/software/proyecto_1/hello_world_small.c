@@ -15,12 +15,15 @@ void io_button_isr(void * context);
 void io_button_setup();
 void check_mode();
 void update_key();
+void update_seg7(unsigned int* value);
 void process_pixel();
 void rsa(int pixel);
 int fast_modular_exponentiation(int base, int exponent, int modulus);
 
 volatile int start;
 volatile int mode;
+volatile int key_select;
+volatile int key_select_prev = 0;
 
 volatile int edge_val;
 
@@ -42,6 +45,7 @@ void timer_irs(void *context)
 
 }
 
+
 void check_mode()
 {
 	start = IORD_ALTERA_AVALON_PIO_DATA(START_BASE);
@@ -49,10 +53,22 @@ void check_mode()
 	//Reads the mode from the switch: auto / manual
 	mode = IORD_ALTERA_AVALON_PIO_DATA(MODE_0_BASE);
 
+	//Reads the key mode from the switch: key n or key d
+	key_select = IORD_ALTERA_AVALON_PIO_DATA(KEY_SELECT_0_BASE);
+
 	if (start == 0)		//key
 	{
 		if (edge_val != 0)
 			update_key();
+		else if (key_select != key_select_prev)
+		{
+			if (key_select == 0)
+				update_seg7(key_n);
+			else
+				update_seg7(key_d);
+		}
+
+		key_select_prev = key_select;
 	}
 	else
 	{
@@ -61,35 +77,44 @@ void check_mode()
 
 		if (mode == 0 && edge_val == 1) 	//manual
 			process_pixel();
-		else								//auto
+		else if (mode == 1)					//auto
 			process_pixel();
 	}
 
+	edge_val = 0;
 }
 
 void update_key()
 {
-	//Reads the key mode from the switch: key n or key d
-	unsigned int key_select = IORD_ALTERA_AVALON_PIO_DATA(KEY_SELECT_0_BASE);
+	unsigned int index = 0;
+
+	if (edge_val == 1)		//0x1
+		index = 0;
+	else if (edge_val == 2)	//0x10
+		index = 1;
+	else if (edge_val == 4) //0x100
+		index = 2;
+	else if (edge_val == 8)	//0x1000
+		index = 3;
 
 	if (key_select == 0)
 	{
-		key_n[edge_val-1] = (key_n[edge_val-1] + 1) & 0xf;
-		IOWR_ALTERA_AVALON_PIO_DATA(SEG7_0_BASE, key_n[0]);
-		IOWR_ALTERA_AVALON_PIO_DATA(SEG7_1_BASE, key_n[1]);
-		IOWR_ALTERA_AVALON_PIO_DATA(SEG7_2_BASE, key_n[2]);
-		IOWR_ALTERA_AVALON_PIO_DATA(SEG7_3_BASE, key_n[3]);
+		key_n[index] = (key_n[index] + 1) & 0xf;
+		update_seg7(key_n);
 	}
 	else
 	{
-		key_d[edge_val-1] = (key_d[edge_val-1] + 1) & 0xf;
-		IOWR_ALTERA_AVALON_PIO_DATA(SEG7_0_BASE, key_d[0]);
-		IOWR_ALTERA_AVALON_PIO_DATA(SEG7_1_BASE, key_d[1]);
-		IOWR_ALTERA_AVALON_PIO_DATA(SEG7_2_BASE, key_d[2]);
-		IOWR_ALTERA_AVALON_PIO_DATA(SEG7_3_BASE, key_d[3]);
+		key_d[index] = (key_d[index] + 1) & 0xf;
+		update_seg7(key_d);
 	}
+}
 
-	edge_val = 0;
+void update_seg7(unsigned int* value)
+{
+	IOWR_ALTERA_AVALON_PIO_DATA(SEG7_0_BASE, value[0]);
+	IOWR_ALTERA_AVALON_PIO_DATA(SEG7_1_BASE, value[1]);
+	IOWR_ALTERA_AVALON_PIO_DATA(SEG7_2_BASE, value[2]);
+	IOWR_ALTERA_AVALON_PIO_DATA(SEG7_3_BASE, value[3]);
 }
 
 
@@ -98,7 +123,7 @@ void process_pixel()
 	if (count >= RAM_0_SIZE_VALUE)
 		return;
 
-	int pixel = IORD_ALTERA_AVALON_PIO_DATA(RAM_0_BASE + count);
+	int pixel = IORD_ALTERA_AVALON_PIO_DATA(SDRAM_BASE + count*4);
 	rsa(pixel);
 
 	count++;
@@ -108,9 +133,14 @@ void process_pixel()
 void rsa(int pixel)
 {
 	int new_pixel = fast_modular_exponentiation(pixel, d_value, n_value);
-
+	unsigned int value[4];
+	value[0] = new_pixel % 10;
+	value[1] = (new_pixel / 10) % 10;
+	value[2] = (new_pixel / 100) % 10;
+	value[3] = (new_pixel / 1000) % 10;
+	update_seg7(value);
 	// Actualizar el lugar donde se escribe
-	IOWR_ALTERA_AVALON_PIO_DATA(RAM_0_BASE + count, new_pixel);
+	//IOWR_ALTERA_AVALON_PIO_DATA(RAM_0_BASE + count, new_pixel);
 }
 
 
@@ -164,6 +194,11 @@ void io_button_isr(void * context){
  */
 int main()
 {
+	IOWR_ALTERA_AVALON_PIO_DATA(SDRAM_BASE, 143909726);
+	IOWR_ALTERA_AVALON_PIO_DATA(SDRAM_BASE + 4, 12605018);
+	IOWR_ALTERA_AVALON_PIO_DATA(SDRAM_BASE + 8, 229800739);
+	IOWR_ALTERA_AVALON_PIO_DATA(SDRAM_BASE + 12, 41677818);
+
 	io_button_setup();
 
 	/* Event loop never exits. */

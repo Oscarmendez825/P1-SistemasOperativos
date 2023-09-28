@@ -46,8 +46,8 @@ ALT_LDFLAGS :=
 # This will ensure paths are readable by GNU Make.
 #------------------------------------------------------------------------------
 
-UNAME = $(shell uname -r | tr A-Z a-z)
-ifeq ($(findstring microsoft,$(UNAME)),microsoft)
+UNAME = $(shell uname -r)
+ifeq ($(findstring Microsoft,$(UNAME)),Microsoft)
 	WINDOWS_EXE = .exe
 endif
 
@@ -61,7 +61,6 @@ else # !WINDOWS_EXE
 	adjust-path = $1
 	adjust-path-mixed = $1
 endif
-
 
 #vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 #                           GENERATED SETTINGS START                         v
@@ -77,12 +76,12 @@ BUILD_CONFIGS := default
 
 # This following VERSION comment indicates the version of the tool used to 
 # generate this makefile. A makefile variable is provided for VERSION as well. 
-# ACDS_VERSION: 22.1
-ACDS_VERSION := 22.1
+# ACDS_VERSION: 20.1
+ACDS_VERSION := 20.1
 
 # This following BUILD_NUMBER comment indicates the build number of the tool 
 # used to generate this makefile. 
-# BUILD_NUMBER: 922
+# BUILD_NUMBER: 720
 
 # Define path to the application ELF. 
 # It may be used by the makefile fragments so is defined before including them. 
@@ -90,7 +89,7 @@ ACDS_VERSION := 22.1
 ELF := proyecto_1.elf
 
 # Paths to C, C++, and assembly source files.
-C_SRCS := hello_world.c
+C_SRCS := hello_world_small.c
 CXX_SRCS :=
 ASM_SRCS :=
 
@@ -110,7 +109,7 @@ CREATE_LINKER_MAP := 1
 # Common arguments for ALT_CFLAGSs
 APP_CFLAGS_DEFINED_SYMBOLS :=
 APP_CFLAGS_UNDEFINED_SYMBOLS :=
-APP_CFLAGS_OPTIMIZATION := -O0
+APP_CFLAGS_OPTIMIZATION := -Os
 APP_CFLAGS_DEBUG_LEVEL := -g
 APP_CFLAGS_WARNINGS := -Wall
 APP_CFLAGS_USER_FLAGS :=
@@ -532,8 +531,8 @@ DOWNLOAD_JDI_FLAG := --jdi $(JDI_FILE)
 endif
 
 # Patch the Elf with the SOPCINFO_FILE if specified
-ifneq ($(wildcard $(call adjust-path,$(SOPCINFO_FILE))),)
-ELF_PATCH_FLAG += --sopcinfo $(SOPCINFO_FILE)
+ifneq ($(wildcard $(SOPCINFO_FILE)),)
+ELF_PATCH_FLAG += --sopcinfo $(call adjust-path-mixed,$(SOPCINFO_FILE))
 endif
 
 # Use the DOWNLOAD_CABLE variable to specify which JTAG cable to use. 
@@ -674,14 +673,14 @@ endif
 define compile.c
 @$(ECHO) Info: Compiling $< to $@
 @$(MKDIR) $(@D)
-$(CC) -MP -MMD -c $(APP_CPPFLAGS) $(APP_CFLAGS) -o "$(call adjust-path-mixed,$@)" "$(call adjust-path-mixed,$<)"
+$(CC) -MP -MMD -c $(APP_CPPFLAGS) $(APP_CFLAGS) -o $@ $<
 $(CC_POST_PROCESS)
 endef
 
 define compile.cpp
 @$(ECHO) Info: Compiling $< to $@
 @$(MKDIR) $(@D)
-$(CXX) -MP -MMD -c $(APP_CPPFLAGS) $(APP_CXXFLAGS) $(APP_CFLAGS) -o "$(call adjust-path-mixed,$@)" "$(call adjust-path-mixed,$<)"
+$(CXX) -MP -MMD -c $(APP_CPPFLAGS) $(APP_CXXFLAGS) $(APP_CFLAGS) -o $@ $<
 $(CXX_POST_PROCESS)
 endef
 
@@ -694,7 +693,7 @@ endif
 define compile.s
 @$(ECHO) Info: Assembling $< to $@
 @$(MKDIR) $(@D)
-$(AS) -MP -MMD -c $(APP_CPPFLAGS) $(APP_CFLAGS) $(APP_ASFLAGS) -o "$(call adjust-path-mixed,$@)" "$(call adjust-path-mixed,$<)"
+$(AS) -MP -MMD -c $(APP_CPPFLAGS) $(APP_CFLAGS) $(APP_ASFLAGS) -o $@ $<
 $(AS_POST_PROCESS)
 endef
 

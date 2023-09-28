@@ -4,7 +4,7 @@
  * Machine generated for CPU 'nios2_gen2_0' in SOPC Builder design 'platform'
  * SOPC Builder design path: C:/intelFPGA_lite/Proyectos/P1-SistemasOperativos/ProcQsys/platform.sopcinfo
  *
- * Generated: Tue Sep 19 18:19:56 CST 2023
+ * Generated: Wed Sep 27 15:35:41 CST 2023
  */
 
 /*
@@ -66,11 +66,15 @@
  */
 
 #define RAM_0_REGION_BASE 0x0
-#define RAM_0_REGION_SPAN 2097152
-#define RESET_REGION_BASE 0x200000
+#define RAM_0_REGION_SPAN 8192
+#define RAM_1_REGION_BASE 0x2000
+#define RAM_1_REGION_SPAN 8192
+#define RESET_REGION_BASE 0x4000
 #define RESET_REGION_SPAN 32
-#define ROM_0_REGION_BASE 0x200020
+#define ROM_0_REGION_BASE 0x4020
 #define ROM_0_REGION_SPAN 8160
+#define SDRAM_REGION_BASE 0x8000000
+#define SDRAM_REGION_SPAN 67108864
 
 
 /*

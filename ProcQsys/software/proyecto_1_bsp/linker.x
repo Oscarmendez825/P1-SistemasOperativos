@@ -4,7 +4,7 @@
  * Machine generated for CPU 'nios2_gen2_0' in SOPC Builder design 'platform'
  * SOPC Builder design path: C:/intelFPGA_lite/Proyectos/P1-SistemasOperativos/ProcQsys/platform.sopcinfo
  *
- * Generated: Tue Sep 19 18:19:56 CST 2023
+ * Generated: Wed Sep 27 15:35:41 CST 2023
  */
 
 /*
@@ -50,14 +50,18 @@
 
 MEMORY
 {
-    ram_0 : ORIGIN = 0x0, LENGTH = 2097152
-    reset : ORIGIN = 0x200000, LENGTH = 32
-    rom_0 : ORIGIN = 0x200020, LENGTH = 8160
+    ram_0 : ORIGIN = 0x0, LENGTH = 8192
+    ram_1 : ORIGIN = 0x2000, LENGTH = 8192
+    reset : ORIGIN = 0x4000, LENGTH = 32
+    rom_0 : ORIGIN = 0x4020, LENGTH = 8160
+    sdram : ORIGIN = 0x8000000, LENGTH = 67108864
 }
 
 /* Define symbols for each memory base-address */
 __alt_mem_ram_0 = 0x0;
-__alt_mem_rom_0 = 0x200000;
+__alt_mem_ram_1 = 0x2000;
+__alt_mem_rom_0 = 0x4000;
+__alt_mem_sdram = 0x8000000;
 
 OUTPUT_FORMAT( "elf32-littlenios2",
                "elf32-littlenios2",
@@ -325,7 +329,24 @@ SECTIONS
      *
      */
 
-    .rom_0 LOADADDR (.ram_0) + SIZEOF (.ram_0) : AT ( LOADADDR (.ram_0) + SIZEOF (.ram_0) )
+    .ram_1 : AT ( LOADADDR (.ram_0) + SIZEOF (.ram_0) )
+    {
+        PROVIDE (_alt_partition_ram_1_start = ABSOLUTE(.));
+        *(.ram_1 .ram_1. ram_1.*)
+        . = ALIGN(4);
+        PROVIDE (_alt_partition_ram_1_end = ABSOLUTE(.));
+    } > ram_1
+
+    PROVIDE (_alt_partition_ram_1_load_addr = LOADADDR(.ram_1));
+
+    /*
+     *
+     * This section's LMA is set to the .text region.
+     * crt0 will copy to this section's specified mapped region virtual memory address (VMA)
+     *
+     */
+
+    .rom_0 LOADADDR (.ram_1) + SIZEOF (.ram_1) : AT ( LOADADDR (.ram_1) + SIZEOF (.ram_1) )
     {
         PROVIDE (_alt_partition_rom_0_start = ABSOLUTE(.));
         *(.rom_0 .rom_0. rom_0.*)
@@ -334,6 +355,23 @@ SECTIONS
     } > rom_0
 
     PROVIDE (_alt_partition_rom_0_load_addr = LOADADDR(.rom_0));
+
+    /*
+     *
+     * This section's LMA is set to the .text region.
+     * crt0 will copy to this section's specified mapped region virtual memory address (VMA)
+     *
+     */
+
+    .sdram : AT ( LOADADDR (.rom_0) + SIZEOF (.rom_0) )
+    {
+        PROVIDE (_alt_partition_sdram_start = ABSOLUTE(.));
+        *(.sdram .sdram. sdram.*)
+        . = ALIGN(4);
+        PROVIDE (_alt_partition_sdram_end = ABSOLUTE(.));
+    } > sdram
+
+    PROVIDE (_alt_partition_sdram_load_addr = LOADADDR(.sdram));
 
     /*
      * Stabs debugging sections.
@@ -382,7 +420,7 @@ SECTIONS
 /*
  * Don't override this, override the __alt_stack_* symbols instead.
  */
-__alt_data_end = 0x200000;
+__alt_data_end = 0x2000;
 
 /*
  * The next two symbols define the location of the default stack.  You can
@@ -398,4 +436,4 @@ PROVIDE( __alt_stack_limit   = __alt_stack_base );
  * Override this symbol to put the heap in a different memory.
  */
 PROVIDE( __alt_heap_start    = end );
-PROVIDE( __alt_heap_limit    = 0x200000 );
+PROVIDE( __alt_heap_limit    = 0x2000 );

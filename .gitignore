@@ -8,12 +8,15 @@
 incremental_db/
 db/
 _output_files/
+output_files
 PLLJ_PLLSPE_INFO.txt
 
 .qsys_edit
 unsaved
 platform
 .metadata
+
+hps_isw_handoff
 
 *.png
 *.bak

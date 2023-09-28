@@ -4,7 +4,7 @@
  * Machine generated for CPU 'nios2_gen2_0' in SOPC Builder design 'platform'
  * SOPC Builder design path: C:/intelFPGA_lite/Proyectos/P1-SistemasOperativos/ProcQsys/platform.sopcinfo
  *
- * Generated: Tue Sep 19 18:19:56 CST 2023
+ * Generated: Tue Sep 26 21:36:58 CST 2023
  */
 
 /*
