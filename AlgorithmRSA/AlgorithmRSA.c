@@ -69,9 +69,9 @@ int main() {
     printf("n: %llu\n", n);
 
     // Ruta del archivo de texto original
-    const char *inputFilePath = "/usr/local/bin/text.txt";
+    const char *inputFilePath = "/home/ghubuntu/Documents/GitHub/P1-SistemasOperativos/AlgorithmRSA/text.txt";
     // Ruta del archivo de texto cifrado
-    const char *outputFilePath = "/usr/local/bin/ciphertext.txt";
+    const char *outputFilePath = "/home/ghubuntu/Documents/GitHub/P1-SistemasOperativos/AlgorithmRSA/ciphertext.txt";
 
     // Leer el archivo de texto original
     FILE *inputFile = fopen(inputFilePath, "r");
