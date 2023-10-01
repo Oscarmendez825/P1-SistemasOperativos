@@ -16,6 +16,10 @@ unsaved
 platform
 .metadata
 
+.vscode
+exe
+proyecto_1
+
 hps_isw_handoff
 
 *.png

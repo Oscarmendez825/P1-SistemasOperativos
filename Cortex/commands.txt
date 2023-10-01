@@ -1,0 +1,1 @@
+echo 0 >/sys/class/fpga-bridge/hps2fpga/enable
