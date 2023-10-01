@@ -80,74 +80,48 @@ int main() {
         return 1;
     }
 
-    // Crear el archivo temporal para valores no cifrados
-    const char *tempFilePath = "/home/ghubuntu/Documents/GitHub/P1-SistemasOperativos/AlgorithmRSA/temp.txt";
-    FILE *tempFile = fopen(tempFilePath, "w");
-    if (tempFile == NULL) {
-        perror("Error al crear el archivo temporal");
+    // Crear el archivo de texto cifrado
+    FILE *outputFile = fopen(outputFilePath, "w");
+    if (outputFile == NULL) {
+        perror("Error al crear el archivo de salida");
         fclose(inputFile);
         return 1;
     }
-
-    // Leer y escribir los dos primeros valores en el archivo temporal
-    unsigned long long value1, value2;
-    if (fscanf(inputFile, "%llu,%llu,", &value1, &value2) != 2) {
-        perror("Error al leer los dos primeros valores del archivo de entrada");
-        fclose(inputFile);
-        fclose(tempFile);
-        return 1;
-    }
-    fprintf(tempFile, "%llu,%llu,", value1, value2);
 
     // Leer el contenido del archivo de texto original y cifrarlo
     char buffer[1024];
-    while (fscanf(inputFile, "%llu,", &value1) != EOF) {
-        // Escribir el valor sin cifrar en el archivo temporal
-        fprintf(tempFile, "%llu,", value1);
-    }
+    unsigned long long plaintext;
+    int isFirstValue = 1; // Para evitar agregar una coma antes del primer valor
+    int counter = 1;
+    while (fscanf(inputFile, "%llu,", &plaintext) != EOF) {
+        // Cifrar el valor
+        unsigned long long ciphertext = encrypt(plaintext, publicKey, n);
+	
+        // Imprimir y escribir el valor cifrado en el archivo de salida
+        if (isFirstValue) {
+            isFirstValue = 0;
+        } else {
+            fprintf(outputFile, ",");
+        }
+        if (counter <= 2){
+        fprintf(outputFile, "%llu", plaintext);
+        counter = counter + 1;
+        }
+        else{
+        fprintf(outputFile, "%llu", ciphertext);
+        }
+        
+        //fprintf(outputFile, "%llu", ciphertext);
 
-    // Cerrar el archivo temporal y el archivo original
-    fclose(tempFile);
-    fclose(inputFile);
-
-    // Reabrir el archivo original en modo de escritura
-    inputFile = fopen(inputFilePath, "w");
-    if (inputFile == NULL) {
-        perror("Error al abrir el archivo de entrada en modo de escritura");
-        return 1;
-    }
-
-    // Reabrir el archivo temporal en modo de lectura y copiar su contenido al archivo original
-    tempFile = fopen(tempFilePath, "r");
-    if (tempFile == NULL) {
-        perror("Error al abrir el archivo temporal en modo de lectura");
-        fclose(inputFile);
-        return 1;
-    }
-
-    while (fgets(buffer, sizeof(buffer), tempFile) != NULL) {
-        fputs(buffer, inputFile);
+        //printf("Texto original: %llu\n", plaintext);
+        //printf("Texto cifrado: %llu\n", ciphertext);
     }
 
     // Cerrar los archivos
-    fclose(tempFile);
     fclose(inputFile);
-
-    // Eliminar el archivo temporal
-    remove(tempFilePath);
-
-    // Ahora puedes cifrar el archivo original, omitiendo los dos primeros valores
-
-    // Leer el archivo de texto original nuevamente
-
-    // Crear el archivo de texto cifrado
-
-    // Cifrar los valores y escribirlos en el archivo de salida
-
-    // Cerrar los archivos y finalizar
+    fclose(outputFile);
 
     printf("Los textos cifrados se han guardado en %s\n", outputFilePath);
 
     return 0;
 }
-
