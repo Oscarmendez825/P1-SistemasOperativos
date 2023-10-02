@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>27-sep-2023 18:53:46</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1695862426009</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>02-oct-2023 2:17:36</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1696234656207</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>C:\intelFPGA_lite\Proyectos\P1-SistemasOperativos\ProcQsys\software\proyecto_1_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>C:\intelFPGA_lite\Proyectos\P1-SistemasOperativos\ProcQsys\platform.sopcinfo</SopcDesignFile>
@@ -74,7 +74,7 @@
                 <SettingName>hal.linker.enable_alt_load</SettingName>
                 <Identifier>none</Identifier>
                 <Type>Boolean</Type>
-                <Value>1</Value>
+                <Value>0</Value>
                 <DefaultValue>0</DefaultValue>
                 <DestinationFile>none</DestinationFile>
                 <Description>Enables the alt_load() facility. The alt_load() facility copies data sections (.rodata, .rwdata, or .exceptions) from boot memory to RAM. If true, this setting sets up the VMA/LMA of sections in linker.x to allow them to be loaded into the .text memory.</Description>
@@ -874,6 +874,30 @@
                 <Enabled>false</Enabled>
                 <Group>none</Group>
         </Setting>
+        <LinkerRegion>
+                <regionName>ram_0</regionName>
+                <memoryName>ram_0</memoryName>
+                <offset>0</offset>
+                <size>8192</size>
+                <baseAddress>0x0</baseAddress>
+                <addressRange>0x00000000 - 0x00001FFF</addressRange>
+        </LinkerRegion>
+        <LinkerRegion>
+                <regionName>reset</regionName>
+                <memoryName>rom_0</memoryName>
+                <offset>0</offset>
+                <size>32</size>
+                <baseAddress>0x4000</baseAddress>
+                <addressRange>0x00004000 - 0x0000401F</addressRange>
+        </LinkerRegion>
+        <LinkerRegion>
+                <regionName>rom_0</regionName>
+                <memoryName>rom_0</memoryName>
+                <offset>32</offset>
+                <size>16352</size>
+                <baseAddress>0x4020</baseAddress>
+                <addressRange>0x00004020 - 0x00007FFF</addressRange>
+        </LinkerRegion>
         <MemoryMap>
                 <slaveDescriptor>ram_0</slaveDescriptor>
                 <addressRange>0x00000000 - 0x00001FFF</addressRange>
@@ -881,62 +905,62 @@
                 <attributes>memory</attributes>
         </MemoryMap>
         <MemoryMap>
-                <slaveDescriptor>ram_1</slaveDescriptor>
-                <addressRange>0x00002000 - 0x00003FFF</addressRange>
-                <addressSpan>8192</addressSpan>
-                <attributes>memory</attributes>
-        </MemoryMap>
-        <MemoryMap>
                 <slaveDescriptor>rom_0</slaveDescriptor>
-                <addressRange>0x00004000 - 0x00005FFF</addressRange>
-                <addressSpan>8192</addressSpan>
+                <addressRange>0x00004000 - 0x00007FFF</addressRange>
+                <addressSpan>16384</addressSpan>
                 <attributes>memory, non-volatile</attributes>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>buttons_0</slaveDescriptor>
-                <addressRange>0x00006000 - 0x0000600F</addressRange>
+                <addressRange>0x00008000 - 0x0000800F</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>key_select_0</slaveDescriptor>
-                <addressRange>0x00006010 - 0x0000601F</addressRange>
+                <addressRange>0x00008010 - 0x0000801F</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>mode_0</slaveDescriptor>
-                <addressRange>0x00006020 - 0x0000602F</addressRange>
+                <addressRange>0x00008020 - 0x0000802F</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>seg7_0</slaveDescriptor>
-                <addressRange>0x00006030 - 0x0000603F</addressRange>
+                <addressRange>0x00008030 - 0x0000803F</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>seg7_1</slaveDescriptor>
-                <addressRange>0x00006040 - 0x0000604F</addressRange>
+                <addressRange>0x00008040 - 0x0000804F</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>seg7_2</slaveDescriptor>
-                <addressRange>0x00006050 - 0x0000605F</addressRange>
+                <addressRange>0x00008050 - 0x0000805F</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>seg7_3</slaveDescriptor>
-                <addressRange>0x00006060 - 0x0000606F</addressRange>
+                <addressRange>0x00008060 - 0x0000806F</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>start</slaveDescriptor>
-                <addressRange>0x00006070 - 0x0000607F</addressRange>
+                <addressRange>0x00008070 - 0x0000807F</addressRange>
+                <addressSpan>16</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>percent</slaveDescriptor>
+                <addressRange>0x00008080 - 0x0000808F</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
         </MemoryMap>

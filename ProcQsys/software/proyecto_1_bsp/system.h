@@ -4,7 +4,7 @@
  * Machine generated for CPU 'nios2_gen2_0' in SOPC Builder design 'platform'
  * SOPC Builder design path: C:/intelFPGA_lite/Proyectos/P1-SistemasOperativos/ProcQsys/platform.sopcinfo
  *
- * Generated: Wed Sep 27 15:35:41 CST 2023
+ * Generated: Sun Oct 01 19:46:09 CST 2023
  */
 
 /*
@@ -175,7 +175,7 @@
  */
 
 #define ALT_MODULE_CLASS_buttons_0 altera_avalon_pio
-#define BUTTONS_0_BASE 0x6000
+#define BUTTONS_0_BASE 0x8000
 #define BUTTONS_0_BIT_CLEARING_EDGE_REGISTER 0
 #define BUTTONS_0_BIT_MODIFYING_OUTPUT_REGISTER 0
 #define BUTTONS_0_CAPTURE 1
@@ -213,7 +213,7 @@
  */
 
 #define ALT_MODULE_CLASS_key_select_0 altera_avalon_pio
-#define KEY_SELECT_0_BASE 0x6010
+#define KEY_SELECT_0_BASE 0x8010
 #define KEY_SELECT_0_BIT_CLEARING_EDGE_REGISTER 0
 #define KEY_SELECT_0_BIT_MODIFYING_OUTPUT_REGISTER 0
 #define KEY_SELECT_0_CAPTURE 0
@@ -240,7 +240,7 @@
  */
 
 #define ALT_MODULE_CLASS_mode_0 altera_avalon_pio
-#define MODE_0_BASE 0x6020
+#define MODE_0_BASE 0x8020
 #define MODE_0_BIT_CLEARING_EDGE_REGISTER 0
 #define MODE_0_BIT_MODIFYING_OUTPUT_REGISTER 0
 #define MODE_0_CAPTURE 0
@@ -259,6 +259,33 @@
 #define MODE_0_RESET_VALUE 0
 #define MODE_0_SPAN 16
 #define MODE_0_TYPE "altera_avalon_pio"
+
+
+/*
+ * percent configuration
+ *
+ */
+
+#define ALT_MODULE_CLASS_percent altera_avalon_pio
+#define PERCENT_BASE 0x8080
+#define PERCENT_BIT_CLEARING_EDGE_REGISTER 0
+#define PERCENT_BIT_MODIFYING_OUTPUT_REGISTER 0
+#define PERCENT_CAPTURE 0
+#define PERCENT_DATA_WIDTH 1
+#define PERCENT_DO_TEST_BENCH_WIRING 0
+#define PERCENT_DRIVEN_SIM_VALUE 0
+#define PERCENT_EDGE_TYPE "NONE"
+#define PERCENT_FREQ 50000000
+#define PERCENT_HAS_IN 1
+#define PERCENT_HAS_OUT 0
+#define PERCENT_HAS_TRI 0
+#define PERCENT_IRQ -1
+#define PERCENT_IRQ_INTERRUPT_CONTROLLER_ID -1
+#define PERCENT_IRQ_TYPE "NONE"
+#define PERCENT_NAME "/dev/percent"
+#define PERCENT_RESET_VALUE 0
+#define PERCENT_SPAN 16
+#define PERCENT_TYPE "altera_avalon_pio"
 
 
 /*
@@ -291,35 +318,6 @@
 
 
 /*
- * ram_1 configuration
- *
- */
-
-#define ALT_MODULE_CLASS_ram_1 altera_avalon_onchip_memory2
-#define RAM_1_ALLOW_IN_SYSTEM_MEMORY_CONTENT_EDITOR 0
-#define RAM_1_ALLOW_MRAM_SIM_CONTENTS_ONLY_FILE 0
-#define RAM_1_BASE 0x2000
-#define RAM_1_CONTENTS_INFO ""
-#define RAM_1_DUAL_PORT 0
-#define RAM_1_GUI_RAM_BLOCK_TYPE "AUTO"
-#define RAM_1_INIT_CONTENTS_FILE "platform_ram_1"
-#define RAM_1_INIT_MEM_CONTENT 1
-#define RAM_1_INSTANCE_ID "NONE"
-#define RAM_1_IRQ -1
-#define RAM_1_IRQ_INTERRUPT_CONTROLLER_ID -1
-#define RAM_1_NAME "/dev/ram_1"
-#define RAM_1_NON_DEFAULT_INIT_FILE_ENABLED 0
-#define RAM_1_RAM_BLOCK_TYPE "AUTO"
-#define RAM_1_READ_DURING_WRITE_MODE "DONT_CARE"
-#define RAM_1_SINGLE_CLOCK_OP 0
-#define RAM_1_SIZE_MULTIPLE 1
-#define RAM_1_SIZE_VALUE 8192
-#define RAM_1_SPAN 8192
-#define RAM_1_TYPE "altera_avalon_onchip_memory2"
-#define RAM_1_WRITABLE 1
-
-
-/*
  * rom_0 configuration
  *
  */
@@ -342,8 +340,8 @@
 #define ROM_0_READ_DURING_WRITE_MODE "DONT_CARE"
 #define ROM_0_SINGLE_CLOCK_OP 0
 #define ROM_0_SIZE_MULTIPLE 1
-#define ROM_0_SIZE_VALUE 8192
-#define ROM_0_SPAN 8192
+#define ROM_0_SIZE_VALUE 16384
+#define ROM_0_SPAN 16384
 #define ROM_0_TYPE "altera_avalon_onchip_memory2"
 #define ROM_0_WRITABLE 0
 
@@ -393,7 +391,7 @@
  */
 
 #define ALT_MODULE_CLASS_seg7_0 altera_avalon_pio
-#define SEG7_0_BASE 0x6030
+#define SEG7_0_BASE 0x8030
 #define SEG7_0_BIT_CLEARING_EDGE_REGISTER 0
 #define SEG7_0_BIT_MODIFYING_OUTPUT_REGISTER 0
 #define SEG7_0_CAPTURE 0
@@ -420,7 +418,7 @@
  */
 
 #define ALT_MODULE_CLASS_seg7_1 altera_avalon_pio
-#define SEG7_1_BASE 0x6040
+#define SEG7_1_BASE 0x8040
 #define SEG7_1_BIT_CLEARING_EDGE_REGISTER 0
 #define SEG7_1_BIT_MODIFYING_OUTPUT_REGISTER 0
 #define SEG7_1_CAPTURE 0
@@ -447,7 +445,7 @@
  */
 
 #define ALT_MODULE_CLASS_seg7_2 altera_avalon_pio
-#define SEG7_2_BASE 0x6050
+#define SEG7_2_BASE 0x8050
 #define SEG7_2_BIT_CLEARING_EDGE_REGISTER 0
 #define SEG7_2_BIT_MODIFYING_OUTPUT_REGISTER 0
 #define SEG7_2_CAPTURE 0
@@ -474,7 +472,7 @@
  */
 
 #define ALT_MODULE_CLASS_seg7_3 altera_avalon_pio
-#define SEG7_3_BASE 0x6060
+#define SEG7_3_BASE 0x8060
 #define SEG7_3_BIT_CLEARING_EDGE_REGISTER 0
 #define SEG7_3_BIT_MODIFYING_OUTPUT_REGISTER 0
 #define SEG7_3_CAPTURE 0
@@ -501,7 +499,7 @@
  */
 
 #define ALT_MODULE_CLASS_start altera_avalon_pio
-#define START_BASE 0x6070
+#define START_BASE 0x8070
 #define START_BIT_CLEARING_EDGE_REGISTER 0
 #define START_BIT_MODIFYING_OUTPUT_REGISTER 0
 #define START_CAPTURE 0
