@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>02-oct-2023 2:17:36</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1696234656207</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>02-oct-2023 16:29:37</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1696285777710</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>C:\intelFPGA_lite\Proyectos\P1-SistemasOperativos\ProcQsys\software\proyecto_1_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>C:\intelFPGA_lite\Proyectos\P1-SistemasOperativos\ProcQsys\platform.sopcinfo</SopcDesignFile>
@@ -963,6 +963,12 @@
                 <addressRange>0x00008080 - 0x0000808F</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>timer_0</slaveDescriptor>
+                <addressRange>0x000080A0 - 0x000080BF</addressRange>
+                <addressSpan>32</addressSpan>
+                <attributes>timer</attributes>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>sdram</slaveDescriptor>
