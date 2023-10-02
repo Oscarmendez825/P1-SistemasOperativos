@@ -16,6 +16,11 @@ unsaved
 platform
 .metadata
 
+project_1
+stb_image
+Makefile
+asd.c
+decrypted_pixels.txt
 .vscode
 exe
 proyecto_1
