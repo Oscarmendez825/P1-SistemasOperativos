@@ -7,15 +7,17 @@
 #include "system.h"
 #include <unistd.h>
 
-static unsigned short key_d[4] = {15, 5, 6, 0};
-static unsigned short key_n[4] = {11, 4, 7, 1};
+static unsigned short key_d[4] = {5, 5, 11, 5};
+static unsigned short key_n[4] = {5, 5, 10, 14};
 static unsigned short n_value = 0;
 static unsigned short d_value = 0;
 static unsigned short percentage[4] = {0, 5, 0, 0};
 static unsigned int percentage_value = 50;
 static unsigned int limit = 0;
 static unsigned short seconds = 0;
-
+static unsigned int pressed = 0;
+static unsigned short width;
+static unsigned short height;
 
 void io_button_isr(void * context);
 void io_button_setup();
@@ -62,6 +64,8 @@ void loop()
 	{
 		started = 0;
 		count = 0;
+		seconds = 0;
+		pixel = 0;
 
 		if (percent == 1)
 		{
@@ -99,8 +103,8 @@ void loop()
 			percentage_value = percentage[2] * 100 + percentage[1] * 10 + percentage[0];
 
 			// Gets the image size from SD
-			unsigned short width = IORD_16DIRECT(SDRAM_BASE, 0);
-			unsigned short height = IORD_16DIRECT(SDRAM_BASE, 2);
+			width = IORD_16DIRECT(SDRAM_BASE, 0);
+			height = IORD_16DIRECT(SDRAM_BASE, 2);
 			image_size = (int)(width * height);
 
 			limit = (unsigned int)(image_size*2*(float)percentage_value/100.0f);
@@ -110,7 +114,15 @@ void loop()
 		}
 
 
-		if (mode == 0 && (edge_val == 1 || (IORD_ALTERA_AVALON_PIO_DATA(BUTTONS_0_BASE) & 0x1) == 0)
+		if (IORD_ALTERA_AVALON_PIO_DATA(BUTTONS_0_BASE) & 0x1)
+		{
+			if (pressed <= 100000)
+				pressed++;
+		}
+		else
+			pressed = 0;
+
+		if (mode == 0 && (edge_val == 1 || pressed >= 100000 )
 				&& count < image_size) 	//manual
 		{
 			process_pixel();
@@ -118,14 +130,12 @@ void loop()
 		}
 		else if (mode == 1) 									//auto
 		{
+			unsigned short message[4] = {0, 12, 14, 13};
+			update_seg7(message);
 			while(mode == 1 && start == 1 && count < image_size)
 			{
-				unsigned short value1[4] = {0};
-				value1[0] = seconds % 10;
-				value1[1] = (seconds / 10) % 10;
-				value1[2] = (seconds / 100) % 10;
-				value1[3] = (seconds / 1000) % 10;
-				update_seg7(value1);
+				start = IORD_ALTERA_AVALON_PIO_DATA(START_BASE);
+				mode = IORD_ALTERA_AVALON_PIO_DATA(MODE_0_BASE);
 				process_pixel();
 			}
 		}
@@ -139,14 +149,20 @@ void loop()
 
 		if (count == image_size)
 		{
+			// Signal decoding finished
 			IOWR_16DIRECT(SDRAM_BASE, image_size*4 + 6, (unsigned short)1);
-			laplacian();
 			count++;
 		}
 
 		flag = IORD_16DIRECT(SDRAM_BASE, image_size*4 + 6);
 
 		if (flag == (unsigned short)2 && started == 1)
+		{
+			IOWR_16DIRECT(SDRAM_BASE, image_size*4 + 6, (unsigned short)3);
+			laplacian();
+		}
+
+		if (flag == (unsigned short)4 && started == 1)
 		{
 			started = 2;
 			value[0] = seconds % 10;
@@ -221,37 +237,70 @@ void update_seg7(unsigned short* value)
 void process_pixel()
 {
 	pixel = IORD_16DIRECT(SDRAM_BASE, count*2 + 4);
-	rsa();
+
+	// Modular exponentiation
+	unsigned int base = (int)pixel;
+	unsigned int modulus = (int)n_value;
+	unsigned int exponent = (int)d_value;
+	unsigned int result = 1;
+
+	base = base % modulus;
+	while (exponent > 0)
+	{
+		if (exponent % 2 == 1)
+			result = (result * base) % modulus;
+		base = (base*base) % modulus;
+		exponent = exponent / 2;
+	}
+
+	pixel = (unsigned short)result;
+	IOWR_16DIRECT(SDRAM_BASE, image_size*2 + count*2 + 4, pixel);
 
 	count++;
 }
 
 
-void rsa()
-{
-	pixel = fast_modular_exponentiation(d_value, n_value);
-	IOWR_16DIRECT(SDRAM_BASE, image_size*2 + count*2 + 4, pixel);
-}
-
-
-unsigned short fast_modular_exponentiation(unsigned short exponent, unsigned short modulus)
-{
-	unsigned short result = 1;
-	pixel = pixel % modulus;
-    while (exponent > 0)
-    {
-        if (exponent % 2 == 1)
-            result = (result * pixel) % modulus;
-        pixel = (pixel*pixel) % modulus;
-        exponent = exponent / 2;
-    }
-    return result;
-}
-
-
 void laplacian()
 {
-	return;
+	int base_offset = (width * height) + 2;
+	int result_offset = 2;
+
+	// Definimos la máscara del filtro laplaciano
+	int mask[3][3] = {
+		{-1, -1, -1},
+		{-1, 8, -1},
+		{-1, -1, -1}};
+
+	// Iteramos a través de la imagen
+	for (int y = 1; y < height - 1; y++)
+	{
+		// Excluimos los bordes de la imagen
+		for (int x = 1; x < width - 1; x++)
+		{
+			// Excluimos los bordes de la imagen
+			int total = 0;
+
+			// Aplicamos la máscara del filtro laplaciano
+			for (int i = -1; i <= 1; i++)
+			{
+				for (int j = -1; j <= 1; j++)
+				{
+					//int pixel_laplace = (*sdram_addr)[(y + i) * width + (x + j) + base_offset];
+					int pixel_laplace = IORD_16DIRECT(SDRAM_BASE, ((y + i) * width + (x + j) + base_offset)*2);
+					int mask_value = mask[i + 1][j + 1];
+					total += pixel_laplace * mask_value;
+				}
+			}
+
+			// Almacenamos el valor resultante en el arreglo de resultado
+			if (total < 0)
+				total = 0;
+			else if (total > 255)
+				total = 255;
+			//(*sdram_addr)[y * width + x + result_offset] = (unsigned short)total;
+			IOWR_16DIRECT(SDRAM_BASE, (y * width + x + result_offset)*2, (unsigned short)total);
+		}
+	}
 }
 
 
