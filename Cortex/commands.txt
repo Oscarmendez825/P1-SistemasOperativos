@@ -1,1 +1,2 @@
+cd .. && cd .. && cd usr/local/bin
 echo 0 >/sys/class/fpga-bridge/hps2fpga/enable
