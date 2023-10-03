@@ -3,7 +3,7 @@
 # Machine generated for CPU 'nios2_gen2_0' in SOPC Builder design 'platform'
 # SOPC Builder design path: C:/intelFPGA_lite/Proyectos/P1-SistemasOperativos/ProcQsys/platform.sopcinfo
 #
-# Generated: Wed Sep 27 15:35:41 CST 2023
+# Generated: Sun Oct 01 19:46:09 CST 2023
 
 # DO NOT MODIFY THIS FILE
 #
@@ -49,11 +49,8 @@
 # ram_0
 memory 0x0 0x2000 cache
 
-# ram_1
-memory 0x2000 0x4000 cache
-
 # rom_0
-memory 0x4000 0x6000 cache
+memory 0x4000 0x8000 cache
 
 # sdram
 memory 0x8000000 0xc000000 cache
