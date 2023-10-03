@@ -15,7 +15,8 @@ enum
     DECODED = (unsigned short)1,
     CLEAR = (unsigned short)2,
     START = (unsigned short)3,
-    DONE = (unsigned short)4
+    DONE = (unsigned short)4,
+    SAVE = (unsigned short)5
 };
 
 int assign_mem(void **virtual_base, int *dev_mem, volatile unsigned short **sdram_addr)
@@ -79,8 +80,11 @@ int load_file(volatile unsigned short **sdram_addr)
 
 int main()
 {
+    printf("Encoding original image...\n");
     encode();
+    printf("Encoding complete.\n");
 
+    printf("Mapping SD memory.\n");
     void *virtual_base;
     int dev_mem = 0;
     volatile unsigned short *sdram_addr = NULL;
@@ -108,19 +112,8 @@ int main()
     printf("Waiting for the decoding process to finish...\n");
     while (1)
     {
-        printf("Cifrada: %u, %u, %u, %u\n", sdram_addr[0], sdram_addr[1], sdram_addr[2], sdram_addr[3]);
-        printf("Cifrada: %u, %u, %u, %u\n", sdram_addr[size - 2], sdram_addr[size - 1], sdram_addr[size], sdram_addr[size + 1]);
-        printf("Desc: %u, %u, %u, %u\n", sdram_addr[size + 2], sdram_addr[size + 3], sdram_addr[size + 4], sdram_addr[size + 5]);
-        printf("Desc: %u, %u, %u, %u\n", sdram_addr[size * 2 - 2], sdram_addr[size * 2 - 1], sdram_addr[size * 2], sdram_addr[size * 2 + 1]);
-        printf("Lapla: %u, %u, %u, %u\n", sdram_addr[width + 3], sdram_addr[width + 4], sdram_addr[width + 5], sdram_addr[width + 6]);
-        printf("Lapla: %u, %u, %u, %u\n", sdram_addr[size - width - 3], sdram_addr[size - width - 2], sdram_addr[size - width - 1], sdram_addr[size - width]);
-        printf("Porcentaje: %u, \n", sdram_addr[size * 2 + 2]);
-        printf("Flag: %u\n", sdram_addr[size * 2 + 3]);
-
         if (sdram_addr[info_offset + 1] == DECODED)
         {
-            printf("Percentage Nios: %u, Cortex: %u\n", sdram_addr[info_offset], 100 - sdram_addr[info_offset]);
-
             laplacian_set_zeros(&sdram_addr);
             sdram_addr[info_offset + 1] = CLEAR;
             printf("Setting space to zeroes finished. Ready to start laplacian algorithm.\n");
@@ -128,14 +121,21 @@ int main()
 
         if (sdram_addr[info_offset + 1] == START)
         {
-            // laplacian(&sdram_addr);
+            printf("Percentage Nios: %u, Cortex: %u\n", sdram_addr[info_offset], 100 - sdram_addr[info_offset]);
+            laplacian(&sdram_addr);
 
             sdram_addr[info_offset + 1] = DONE;
-            printf("Done.");
-            // exit(0);
+            printf("Laplacian filter completed.\n");
         }
 
-        usleep(1000000);
+        if (sdram_addr[info_offset + 1] == SAVE)
+        {
+            write_results(&sdram_addr);
+            printf("Results saved.\n");
+            exit(0);
+        }
+
+        usleep(1000);
     }
 
     clear_mem(&virtual_base, &dev_mem);
