@@ -107,22 +107,20 @@ void loop()
 			height = IORD_16DIRECT(SDRAM_BASE, 2);
 			image_size = (int)(width * height);
 
-			limit = (unsigned int)(image_size*2*(float)percentage_value/100.0f);
-
 			// Stores the percentage
 			IOWR_16DIRECT(SDRAM_BASE, image_size*4 + 4, (unsigned short)percentage_value);
 		}
 
 
-		if (IORD_ALTERA_AVALON_PIO_DATA(BUTTONS_0_BASE) & 0x1)
+		if ((IORD_ALTERA_AVALON_PIO_DATA(BUTTONS_0_BASE) & 0x1) == 0)
 		{
-			if (pressed <= 100000)
+			if (pressed <= 20000)
 				pressed++;
 		}
 		else
 			pressed = 0;
 
-		if (mode == 0 && (edge_val == 1 || pressed >= 100000 )
+		if (mode == 0 && (edge_val == 1 || pressed >= 20000 )
 				&& count < image_size) 	//manual
 		{
 			process_pixel();
@@ -158,12 +156,17 @@ void loop()
 
 		if (flag == (unsigned short)2 && started == 1)
 		{
+			// When the space in memory is ready, signals the beginning of laplacian filter
 			IOWR_16DIRECT(SDRAM_BASE, image_size*4 + 6, (unsigned short)3);
+			unsigned short message[4] = {1, 15, 0, 0};
+			update_seg7(message);
 			laplacian();
 		}
 
 		if (flag == (unsigned short)4 && started == 1)
 		{
+			// When both sides finished the laplacian filter, signals to store the result files
+			IOWR_16DIRECT(SDRAM_BASE, image_size*4 + 6, (unsigned short)5);
 			started = 2;
 			value[0] = seconds % 10;
 			value[1] = (seconds / 10) % 10;
@@ -262,6 +265,9 @@ void process_pixel()
 
 void laplacian()
 {
+	if (percentage_value == 0)
+		return;
+
 	int base_offset = (width * height) + 2;
 	int result_offset = 2;
 
@@ -272,7 +278,7 @@ void laplacian()
 		{-1, -1, -1}};
 
 	// Iteramos a través de la imagen
-	for (int y = 1; y < height - 1; y++)
+	for (int y = 1; y < height*percentage_value/100 - 1; y++)
 	{
 		// Excluimos los bordes de la imagen
 		for (int x = 1; x < width - 1; x++)

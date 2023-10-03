@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>03-oct-2023 0:39:46</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1696315186335</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>03-oct-2023 4:16:25</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1696328185686</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>C:\intelFPGA_lite\Proyectos\P1-SistemasOperativos\ProcQsys\software\proyecto_1_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>C:\intelFPGA_lite\Proyectos\P1-SistemasOperativos\ProcQsys\platform.sopcinfo</SopcDesignFile>
